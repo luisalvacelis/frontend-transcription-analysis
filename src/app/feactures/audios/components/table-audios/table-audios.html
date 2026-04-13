@@ -34,7 +34,7 @@
         class="select select-bordered bg-base-100 flex items-center gap-2 w-full md:w-64 focus-within:outline-none focus-within:border-info focus-within:ring-2 focus-within:ring-info/30 focus-within:ring-offset-0">
         <span
           class="text-xs text-base-content/60 whitespace-nowrap">Campaña</span>
-        <select class="grow bg-transparent outline-none"
+        <select class="campaign-select grow bg-base-100 outline-none"
           [value]="campaignIdTerm() ?? ''"
           (change)="onCampaignChange($any($event.target).value)">
           <option value>Todas las campañas</option>
