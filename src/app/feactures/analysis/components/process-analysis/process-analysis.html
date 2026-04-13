@@ -1,0 +1,95 @@
+<article
+  class="rounded-2xl border border-base-200 bg-base-100 p-5 pb-10 shadow-sm lg:col-span-2">
+  <h2 class="text-lg font-bold text-base-content">Ejecucion por Campaña</h2>
+
+  <div class="mt-4 grid gap-4 md:grid-cols-5">
+    <label class="form-control">
+      <span class="label-text text-base-content/70">Campaña</span>
+      <select
+        class="select select-bordered w-full bg-base-100 analysis-neon-control"
+        [ngModel]="selectedCampaignId"
+        (ngModelChange)="selectedCampaignIdChange.emit($event)">
+        <option value>Seleccionar...</option>
+        @for (campaign of campaigns; track campaign.id) {
+        <option [value]="campaign.id">{{ campaign.campaign_name
+          }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="form-control">
+      <span class="label-text text-base-content/70">Prompt</span>
+      <ng-content select="[prompt-select]"></ng-content>
+    </label>
+
+    <label class="form-control">
+      <span class="label-text text-base-content/70">Formato salida</span>
+      <ng-content select="[format-select]"></ng-content>
+    </label>
+
+    <label class="form-control">
+      <span class="label-text text-base-content/70">Modo</span>
+      <select
+        class="select select-bordered w-full bg-base-100 analysis-neon-control"
+        [ngModel]="mode"
+        (ngModelChange)="onModeChange($event)">
+        <option value="transcribe">Solo Transcribir</option>
+        <option value="analyze">Solo Analizar</option>
+        <option value="both">Transcribir + Analizar</option>
+      </select>
+    </label>
+
+    <label class="form-control">
+      <span class="label-text text-base-content/70">Proveedor de
+        transcripcion</span>
+      <select
+        class="select select-bordered w-full bg-base-100 analysis-neon-control"
+        [ngModel]="transcribeProvider"
+        [disabled]="mode === 'analyze'"
+        (ngModelChange)="onTranscribeProviderChange($event)">
+        <option value="deepgram">Deepgram</option>
+        <option value="whisperx">WhisperX</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-2">
+    <button
+      class="btn btn-primary"
+      [disabled]="working" (click)="runPipeline.emit()">
+      Ejecutar Proceso
+    </button>
+    <button class="btn btn-outline"
+      (click)="refresh.emit()">
+      Refrescar
+    </button>
+    <button class="btn btn-outline btn-error"
+      [disabled]="!canStopAnalysis || working"
+      (click)="stopAnalysis.emit()">
+      Detener Analisis
+    </button>
+    <button class="btn btn-outline btn-success"
+      (click)="downloadExcel.emit()">
+      Descargar Excel
+    </button>
+  </div>
+
+  @if (status) {
+  <div class="mt-6 rounded-xl border border-base-200 bg-base-200/40 p-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="text-base-content font-semibold">Estado: {{ status.message
+        ||
+        'Sin estado' }}</p>
+      <span class="badge badge-info badge-outline">{{
+        status.progress_percentage }}%</span>
+    </div>
+    <progress class="progress progress-info mt-2 w-full"
+      [value]="status.completed || 0"
+      [max]="status.total || 1"></progress>
+    <p class="mt-2 text-xs text-base-content/70">
+      Total: {{ status.total }} | Completados: {{ status.completed }} |
+      Fallidos: {{ status.failed }} | Pendientes: {{ status.pending }}
+    </p>
+  </div>
+  }
+</article>

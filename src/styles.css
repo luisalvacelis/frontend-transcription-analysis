@@ -1,3 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: all;
+}
+
+/* Keep analysis controls with a consistent neon focus from first click. */
+.analysis-neon-control:focus,
+.analysis-neon-control:focus-visible,
+.analysis-neon-control:focus-within {
+  outline: none !important;
+  border-color: rgb(34 211 238) !important;
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.35) !important;
+}

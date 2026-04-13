@@ -1,0 +1,96 @@
+<div class="flex items-center justify-center p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl rounded-3xl">
+    <div class="card-body p-8 gap-6">
+
+      <div class="flex justify-center">
+        <div
+          class="w-16 h-16 rounded-2xl bg-primary text-primary-content flex items-center justify-center text-2xl font-bold shadow-glow">
+          T&A
+        </div>
+      </div>
+
+      <div class="text-center space-y-1">
+        <h1 class="text-2xl font-bold">Bienvenido de nuevo</h1>
+        <p class="text-base-content/60">Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form class="space-y-4" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <label
+          class="input input-bordered w-full rounded-2xl h-14 flex items-center gap-3 border-base-300 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0">
+
+          <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <circle cx="12" cy="8" r="4"></circle>
+            </g>
+          </svg>
+
+
+          <input type="email" class="grow focus:outline-none" placeholder="Usuario"
+            formControlName="username" autocomplete="off" />
+        </label>
+
+        @if (formUtils.isValidField(loginForm, 'username')) {
+        <p class="label-text-alt text-error">
+          {{ formUtils.getFieldError(loginForm, 'username') }}
+        </p>
+        }
+
+        <label
+          class="input input-bordered w-full rounded-2xl h-14 flex items-center gap-3 border-base-300 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30 focus-within:ring-offset-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-60" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+            <path d="M6 11h12v10H6z"></path>
+          </svg>
+
+          <input class="grow focus:outline-none" [type]="showPassword() ? 'text' : 'password'" placeholder="Contraseña"
+            formControlName="password" autocomplete="current-password" />
+
+          <button type="button" class="btn btn-ghost btn-sm btn-circle" (click)="togglePassword()"
+            [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </label>
+
+        @if (formUtils.isValidField(loginForm, 'password')) {
+        <p class="label-text-alt text-error">
+          {{ formUtils.getFieldError(loginForm, 'password') }}
+        </p>
+        }
+
+        <!-- <div class="flex justify-end">
+          <a routerLink="/auth/forgot-password" class="link link-primary text-sm">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div> -->
+
+        <button type="submit" class="btn btn-primary w-full rounded-2xl h-14 text-base font-semibold"
+          [disabled]="loading()">
+
+          @if (loading()) {
+          Ingresando <span class="loading loading-spinner"></span>
+          } @else {
+          Iniciar sesión
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M5 12h14"></path>
+            <path d="M13 5l7 7-7 7"></path>
+          </svg>
+          }
+        </button>
+
+        @if (error()) {
+        <p class="label-text-alt text-error">{{ error() }}</p>
+        }
+
+      </form>
+    </div>
+  </div>
+</div>

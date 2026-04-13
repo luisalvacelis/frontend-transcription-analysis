@@ -1,0 +1,92 @@
+<section class="bg-base-50 min-h-[calc(100vh-9rem)] py-10 px-3 md:px-6">
+  <div class="mx-auto max-w-7xl space-y-10">
+    <app-header-analysis></app-header-analysis>
+
+    @if (error()) {
+    <div class="alert alert-error text-sm">{{ error() }}</div>
+    }
+    @if (success()) {
+    <div class="alert alert-success text-sm">{{ success() }}</div>
+    }
+
+    <app-process-analysis
+      [campaigns]="campaigns()"
+      [selectedCampaignId]="selectedCampaignId()"
+      [selectedPromptId]="selectedPromptId()"
+      [selectedFormatId]="selectedFormatId()"
+      [mode]="processMode()"
+      [transcribeProvider]="transcribeProvider()"
+      [working]="working()"
+      [status]="status()"
+      (selectedCampaignIdChange)="selectedCampaignId.set($event)"
+      (selectedPromptIdChange)="selectedPromptId.set($event)"
+      (selectedFormatIdChange)="selectedFormatId.set($event)"
+      (modeChange)="processMode.set($event)"
+      (transcribeProviderChange)="transcribeProvider.set($event)"
+      (runPipeline)="startPipeline()"
+      (stopAnalysis)="stopAnalysis()"
+      (refresh)="refreshStatusesAndResults()"
+      (downloadExcel)="downloadExcel()">
+      <select prompt-select
+        class="select select-bordered w-full bg-base-100 analysis-neon-control"
+        [ngModel]="selectedPromptId()"
+        (ngModelChange)="onPromptSelected($event)">
+        <option value>Seleccionar...</option>
+        @for (prompt of prompts(); track prompt.id) {
+        <option [value]="prompt.id">{{ prompt.name }}</option>
+        }
+      </select>
+
+      <select format-select
+        class="select select-bordered w-full bg-base-100 analysis-neon-control"
+        [ngModel]="selectedFormatId()"
+        (ngModelChange)="selectedFormatId.set($event)">
+        <option value>Seleccionar...</option>
+        @for (format of formats(); track format.id) {
+        <option [value]="format.id">{{ format.name }}</option>
+        }
+      </select>
+    </app-process-analysis>
+
+    <div class="mt-10 grid items-start gap-x-16 gap-y-12 lg:grid-cols-2">
+      <app-prompt-manager
+        [prompts]="prompts()"
+        [newPromptName]="newPromptName()"
+        [newPromptText]="newPromptText()"
+        [working]="working()"
+        [promptMessage]="promptMessage()"
+        [promptMessageType]="promptMessageType()"
+        (newPromptNameChange)="newPromptName.set($event)"
+        (newPromptTextChange)="newPromptText.set($event)"
+        (createPrompt)="createPrompt()"
+        (deletePrompt)="deletePrompt($event)">
+      </app-prompt-manager>
+
+      <app-format-manager
+        [formats]="formats()"
+        [newFormatName]="newFormatName()"
+        [newFormatFields]="newFormatFields()"
+        [newFormatDescription]="newFormatDescription()"
+        [newFormatLayoutConfig]="newFormatLayoutConfig()"
+        [metadataExtractionTypes]="metadataExtractionTypes()"
+        [selectedMetadataExtractionType]="selectedMetadataExtractionType()"
+        [working]="working()"
+        [formatMessage]="formatMessage()"
+        [formatMessageType]="formatMessageType()"
+        (newFormatNameChange)="newFormatName.set($event)"
+        (newFormatFieldsChange)="newFormatFields.set($event)"
+        (newFormatDescriptionChange)="newFormatDescription.set($event)"
+        (newFormatLayoutConfigChange)="newFormatLayoutConfig.set($event)"
+        (selectedMetadataExtractionTypeChange)="selectedMetadataExtractionType.set($event)"
+        (createFormat)="createFormat()"
+        (deleteFormat)="deleteFormat($event)">
+      </app-format-manager>
+    </div>
+
+    <div class="pt-4">
+      <app-results-analysis-table
+        [results]="results()"
+        [transcriptions]="transcriptions()"></app-results-analysis-table>
+    </div>
+  </div>
+</section>

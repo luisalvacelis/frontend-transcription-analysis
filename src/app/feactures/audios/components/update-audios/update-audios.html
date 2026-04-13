@@ -1,0 +1,58 @@
+<dialog #dialog class="modal">
+    <div class="modal-box w-11/12 max-w-2xl p-0 overflow-hidden">
+        <div
+            class="p-5 border-b border-base-200 flex items-start justify-between gap-4">
+            <div class="min-w-0">
+                <h3 class="text-lg font-bold text-base-content">Editar
+                    Audio</h3>
+                <p class="text-sm text-base-content/60 mt-0.5">
+                    Actualiza el nombre visible del audio.
+                </p>
+            </div>
+
+            <div class="shrink-0">
+                <span class="badge badge-info badge-outline">Audios</span>
+            </div>
+        </div>
+
+        <div class="p-5 space-y-4">
+            <label class="form-control">
+                <span class="label-text text-base-content/70">Nombre del
+                    audio</span>
+                <input
+                    class="input input-bordered w-full bg-base-100 analysis-neon-control"
+                    [ngModel]="audioName()"
+                    (ngModelChange)="audioName.set($event)"
+                    placeholder="Ej: llamada_cliente_001.mp3" />
+            </label>
+
+            @if (error()) {
+            <p class="label-text-alt text-error">{{ error() }}</p>
+            }
+
+            <div
+                class="mt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <form method="dialog" class="sm:mr-auto">
+                    <button class="btn btn-ghost w-full sm:w-auto" type="button"
+                        (click)="close()">Cancelar</button>
+                </form>
+
+                <button class="btn btn-primary w-full sm:w-auto" type="button"
+                    [disabled]="loading()" (click)="save()">
+                    @if (loading()) {
+                    <span class="inline-flex items-center gap-2">
+                        Guardando...
+                        <span class="loading loading-spinner"></span>
+                    </span>
+                    } @else {
+                    <span>Guardar cambios</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+        <button aria-label="Cerrar">close</button>
+    </form>
+</dialog>

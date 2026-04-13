@@ -1,0 +1,343 @@
+<section class="mx-auto max-w-7xl space-y-5 py-6">
+    <div
+        class="relative overflow-hidden rounded-3xl border border-base-200 bg-base-100 p-6 shadow-sm">
+        <div
+            class="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div class="space-y-2">
+                <p
+                    class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-500/90">Inicio</p>
+                <h1
+                    class="text-3xl font-extrabold tracking-tight text-base-content md:text-4xl">Panel
+                    general de audios</h1>
+                <p class="max-w-2xl text-sm text-base-content/70 md:text-base">
+                    Resumen operativo de todos los audios subidos por tu
+                    usuario.
+                </p>
+            </div>
+
+            <button class="btn btn-primary btn-sm md:btn-md"
+                routerLink="/audios">
+                Ir a audios
+            </button>
+        </div>
+    </div>
+
+    @if (loading()) {
+    <div
+        class="grid min-h-[16rem] place-items-center rounded-3xl border border-base-200 bg-base-100 shadow-sm">
+        <div class="flex flex-col items-center gap-3 text-base-content/70">
+            <span
+                class="loading loading-spinner loading-lg text-cyan-500"></span>
+            <p>Cargando resumen...</p>
+        </div>
+    </div>
+    } @else {
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <article
+            class="rounded-3xl border border-cyan-500/15 bg-base-100 p-5 shadow-sm">
+            <p
+                class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-500/80">Audios
+                totales</p>
+            <strong
+                class="mt-2 block text-3xl font-extrabold text-base-content">{{
+                summary()?.total || 0 }}</strong>
+            <p class="mt-1 text-sm text-base-content/60">Todos los audios del
+                usuario</p>
+        </article>
+
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <p
+                class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/50">Transcritos</p>
+            <strong
+                class="mt-2 block text-3xl font-extrabold text-base-content">{{
+                summary()?.transcribed || 0 }}</strong>
+            <p class="mt-1 text-sm text-base-content/60">Con transcripción
+                guardada</p>
+        </article>
+
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <p
+                class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/50">Pendientes</p>
+            <strong
+                class="mt-2 block text-3xl font-extrabold text-base-content">{{
+                summary()?.pending || 0 }}</strong>
+            <p class="mt-1 text-sm text-base-content/60">Sin transcripción
+                aún</p>
+        </article>
+
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <p
+                class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/50">Minutos
+                totales</p>
+            <strong
+                class="mt-2 block text-3xl font-extrabold text-base-content">{{
+                formatMinutes(summary()?.total_duration_minutes) }}</strong>
+            <p class="mt-1 text-sm text-base-content/60">Duración acumulada</p>
+        </article>
+
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <p
+                class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/50">Costo
+                total</p>
+            <strong
+                class="mt-2 block text-3xl font-extrabold text-base-content">{{
+                (summary()?.total_cost || 0) | number:'1.2-2' }}</strong>
+            <p class="mt-1 text-sm text-base-content/60">Costo acumulado del
+                usuario</p>
+        </article>
+    </div>
+
+    <div class="grid gap-4 xl:grid-cols-2">
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <div class="mb-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-base-content">Progreso de
+                        transcripcion</h2>
+                </div>
+                <span class="badge badge-outline">{{ transcribedPercent()
+                    }}%</span>
+            </div>
+
+            <progress class="progress progress-primary w-full"
+                [value]="transcribedPercent()" max="100"></progress>
+
+            <div class="mt-4 grid grid-cols-2 gap-3">
+                <div
+                    class="rounded-2xl border border-success/20 bg-success/5 p-4">
+                    <p
+                        class="text-xs uppercase tracking-[0.16em] text-success">Transcritos</p>
+                    <p class="mt-1 text-2xl font-extrabold text-base-content">{{
+                        summary()?.transcribed || 0 }}</p>
+                    <p class="text-xs text-base-content/60">{{
+                        transcribedPercent() }}% del total</p>
+                </div>
+                <div
+                    class="rounded-2xl border border-warning/25 bg-warning/10 p-4">
+                    <p
+                        class="text-xs uppercase tracking-[0.16em] text-warning">Pendientes</p>
+                    <p class="mt-1 text-2xl font-extrabold text-base-content">{{
+                        summary()?.pending || 0 }}</p>
+                    <p class="text-xs text-base-content/60">{{ pendingPercent()
+                        }}% del total</p>
+                </div>
+            </div>
+        </article>
+
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <div class="mb-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-base-content">Costo total
+                        por campaña</h2>
+                </div>
+                <span class="badge badge-outline">{{ campaignCostChart().length
+                    }}
+                    barras</span>
+            </div>
+
+            <div class="space-y-3">
+                @for (item of campaignCostChart(); track item.id) {
+                <div class="rounded-2xl border border-base-200 px-3 py-2">
+                    <div class="mb-2 flex items-center justify-between gap-2">
+                        <div class="flex min-w-0 items-center gap-2">
+                            <span class="badge badge-sm badge-primary">#{{
+                                item.rank }}</span>
+                            <span class="truncate text-xs text-base-content/80"
+                                [title]="item.label">{{ item.shortLabel
+                                }}</span>
+                        </div>
+                        <span class="text-xs font-bold text-base-content">{{
+                            item.totalCost | number:'1.2-2' }}</span>
+                    </div>
+                    <div
+                        class="mb-2 flex items-center justify-between text-[11px] text-base-content/60">
+                        <span>{{ item.totalAudios }} audios</span>
+                        <span>Costo total</span>
+                    </div>
+                    @if (item.hasBreakdown) {
+                    <div class="mb-2 grid grid-cols-3 gap-2 text-[11px]">
+                        <div
+                            class="rounded-lg border border-info/25 bg-info/10 px-2 py-1 text-center text-base-content/80">
+                            <p
+                                class="uppercase tracking-[0.1em] text-base-content/60">Transcripción</p>
+                            <p class="font-semibold">{{ item.transcriptionCost |
+                                number:'1.2-2' }}</p>
+                        </div>
+                        <div
+                            class="rounded-lg border border-warning/25 bg-warning/10 px-2 py-1 text-center text-base-content/80">
+                            <p
+                                class="uppercase tracking-[0.1em] text-base-content/60">Análisis</p>
+                            <p class="font-semibold">{{ item.analysisCost |
+                                number:'1.2-2' }}</p>
+                        </div>
+                        <div
+                            class="rounded-lg border border-success/25 bg-success/10 px-2 py-1 text-center text-base-content/80">
+                            <p
+                                class="uppercase tracking-[0.1em] text-base-content/60">Total</p>
+                            <p class="font-semibold">{{ item.totalCost |
+                                number:'1.2-2' }}</p>
+                        </div>
+                    </div>
+                    } @else {
+                    <div
+                        class="mb-2 rounded-lg border border-base-300 bg-base-200/50 px-2 py-1 text-[11px] text-base-content/70">
+                        Desglose transcripción/análisis no disponible en API.
+                        Mostrando total.
+                    </div>
+                    }
+                    <div class="h-2.5 w-full rounded-full bg-base-200">
+                        <div
+                            class="h-2.5 rounded-full bg-cyan-500 transition-all duration-300"
+                            [style.width.%]="item.width"></div>
+                    </div>
+                </div>
+                } @empty {
+                <div
+                    class="rounded-2xl border border-dashed border-base-300 p-6 text-center text-sm text-base-content/60">
+                    No hay campañas con costo para construir la grafica.
+                </div>
+                }
+            </div>
+        </article>
+    </div>
+
+    <div class="grid gap-4 xl:grid-cols-3">
+        <article
+            class="xl:col-span-2 rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <div class="mb-4 flex items-start justify-between gap-3">
+                <div>
+                    <p
+                        class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-500/80">Actividad
+                        reciente</p>
+                    <h2 class="text-lg font-bold text-base-content">Ultimos
+                        audios subidos</h2>
+                </div>
+                <span class="badge badge-outline">{{ recentAudios().length }}
+                    items</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-base-200">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr class="text-xs text-base-content/70">
+                            <th>Audio</th>
+                            <th>Minutos</th>
+                            <th>Transcripcion</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (audio of recentAudios(); track audio.id) {
+                        <tr>
+                            <td class="text-xs">{{ audio.audio_name }}</td>
+                            <td class="text-xs">{{ formatMinutes(audio.minutes)
+                                }}</td>
+                            <td class="text-xs">
+                                @if (audio.transcription.trim()) {
+                                <span
+                                    class="badge badge-success badge-outline">Si</span>
+                                } @else {
+                                <span class="badge badge-ghost">No</span>
+                                }
+                            </td>
+                            <td class="text-xs">{{ audio.register_date |
+                                date:'yyyy-MM-dd HH:mm' }}</td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="4"
+                                class="py-8 text-center text-sm text-base-content/60">
+                                Aun no hay audios registrados.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article
+            class="rounded-3xl border border-base-200 bg-base-100 p-5 shadow-sm">
+            <p
+                class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-500/80">Desglose
+                de costos</p>
+            <h2 class="mt-1 text-lg font-bold text-base-content">Transcripción
+                y análisis</h2>
+
+            <div class="mt-4 space-y-3">
+                <div
+                    class="rounded-2xl border border-info/20 bg-info/5 p-4 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p
+                                class="text-xs uppercase tracking-[0.16em] text-info">Deepgram
+                                / Transcripción</p>
+                            <p
+                                class="text-2xl font-extrabold text-base-content">{{
+                                costBreakdown().transcription | number:'1.2-2'
+                                }}</p>
+                        </div>
+                        <span class="badge badge-info badge-outline">{{
+                            summary()?.total_duration_minutes ?
+                            (summary()?.total_duration_minutes | number:'1.2-2')
+                            : '0.00' }} min</span>
+                    </div>
+                    <p class="mt-2 text-xs text-base-content/60">Costo asociado
+                        al uso de transcripción por Deepgram, sumado desde las
+                        campañas.</p>
+                </div>
+
+                <div
+                    class="rounded-2xl border border-warning/20 bg-warning/10 p-4 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p
+                                class="text-xs uppercase tracking-[0.16em] text-warning">Análisis</p>
+                            <p
+                                class="text-2xl font-extrabold text-base-content">{{
+                                costBreakdown().analysis | number:'1.2-2' }}</p>
+                        </div>
+                        <span
+                            class="badge badge-warning badge-outline">IA</span>
+                    </div>
+                    <p class="mt-2 text-xs text-base-content/60">Costo del
+                        análisis generado sobre las transcripciones
+                        procesadas.</p>
+                </div>
+
+                <div
+                    class="rounded-2xl border border-success/20 bg-success/5 p-4 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p
+                                class="text-xs uppercase tracking-[0.16em] text-success">Costo
+                                total</p>
+                            <p
+                                class="text-2xl font-extrabold text-base-content">{{
+                                costBreakdown().total | number:'1.2-2' }}</p>
+                        </div>
+                        <span
+                            class="badge badge-success badge-outline">Total</span>
+                    </div>
+                    <p class="mt-2 text-xs text-base-content/60">Suma
+                        consolidada del costo de transcripción y análisis por
+                        campaña.</p>
+                </div>
+
+                @if (!costBreakdown().hasBreakdown) {
+                <div
+                    class="rounded-2xl border border-base-300 bg-base-200/60 p-3 text-xs text-base-content/70">
+                    La API todavía no expone el desglose por campaña; por ahora
+                    se muestra el total consolidado.
+                </div>
+                }
+            </div>
+        </article>
+    </div>
+    }
+</section>

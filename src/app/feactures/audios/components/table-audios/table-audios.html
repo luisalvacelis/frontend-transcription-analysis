@@ -1,0 +1,305 @@
+<div class="rounded-2xl bg-base-100 shadow-sm border border-base-200">
+
+  <div
+    class="p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between border-b border-base-200">
+    <div>
+      <h2 class="text-2xl font-bold text-base-content">
+        Lista de Audios
+      </h2>
+      <p class="mt-1 text-sm text-base-content/60">
+        @if (campaignIdTerm()) {
+        Campaña seleccionada: {{ campaigns().find((campaign) => campaign.id ===
+        campaignIdTerm())?.campaign_name || campaignIdTerm() }}
+        } @else {
+        Total: {{ meta()?.total ?? 0 }} audios
+        }
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-2 md:flex-row md:items-center">
+      <button class="btn btn-ghost btn-outline px-4" type="button"
+        (click)="refreshTable()" title="Recargar audios">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+          viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 0 1-15.71 5.83"></path>
+          <path d="M3 12a9 9 0 0 1 15.71-5.83"></path>
+          <path d="M17 4v4h-4"></path>
+          <path d="M7 20v-4h4"></path>
+        </svg>
+        Recargar
+      </button>
+
+      <label
+        class="select select-bordered bg-base-100 flex items-center gap-2 w-full md:w-64 focus-within:outline-none focus-within:border-info focus-within:ring-2 focus-within:ring-info/30 focus-within:ring-offset-0">
+        <span
+          class="text-xs text-base-content/60 whitespace-nowrap">Campaña</span>
+        <select class="grow bg-transparent outline-none"
+          [value]="campaignIdTerm() ?? ''"
+          (change)="onCampaignChange($any($event.target).value)">
+          <option value>Todas las campañas</option>
+          @for (campaign of campaigns(); track campaign.id) {
+          <option [value]="campaign.id">{{ campaign.campaign_name }}</option>
+          }
+        </select>
+      </label>
+
+      @if (campaignIdTerm()) {
+      <button class="btn btn-ghost btn-sm" type="button"
+        (click)="clearCampaign()">
+        Limpiar campaña
+      </button>
+      }
+
+      <label
+        class="input input-bordered bg-base-100 flex items-center gap-2 w-full md:w-64 focus-within:outline-none focus-within:border-info focus-within:ring-2 focus-within:ring-info/30 focus-within:ring-offset-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60"
+          viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M21 21l-4.3-4.3"></path>
+        </svg>
+        <input type="text" class="grow" placeholder="Buscar..."
+          [value]="searchTerm()"
+          (input)="onSearchChange($any($event.target).value)" />
+
+        @if (searchTerm()) {
+        <button type="button" class="btn btn-ghost btn-xs btn-circle"
+          (click)="clearSearch()" title="Limpiar búsqueda">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M18 6L6 18"></path>
+            <path d="M6 6l12 12"></path>
+          </svg>
+        </button>
+        }
+      </label>
+
+      <button class="btn btn-primary px-6" (click)="addAudio()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+        Nuevo Audio
+      </button>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr class="text-xs text-base-content/60">
+          <th class="w-12"></th>
+          <th>AUDIO</th>
+          <th>CREADO</th>
+          <th>ACTUALIZADO</th>
+          <th class="text-right">ACCIONES</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (loading()) {
+        <tr>
+          <td colspan="5" class="p-6 text-center">
+            <div class="card-body items-center text-center gap-5 p-8">
+              <div>
+                <h2 class="text-xl font-bold">Cargando...</h2>
+              </div>
+              <span class="loading loading-spinner loading-lg"></span>
+              <progress class="progress progress-primary w-full"
+                max="100"></progress>
+            </div>
+          </td>
+        </tr>
+        } @else {
+
+        @for (audio of audios(); track audio.id) {
+        <tr class="hover">
+          <td>
+            <div
+              class="h-10 w-10 rounded-xl bg-info/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-info"
+                viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M21 2l-2 2"></path>
+                <path d="M7 7l-5 5v3h3l5-5"></path>
+                <path d="M16 5l3 3"></path>
+                <path d="M14 7l3 3"></path>
+                <path d="M5 16l3 3"></path>
+              </svg>
+            </div>
+          </td>
+
+          <td>
+            <div class="font-medium text-base-content">{{ audio.audio_name
+              }}</div>
+            <div class="text-xs text-base-content/60 font-mono">{{
+              audio.campaign_id }}</div>
+          </td>
+
+          <td>
+            <div class="text-sm text-base-content/80">
+              {{ audio.register_date| date:'dd/MM/yyyy HH:mm:ss' }}
+            </div>
+          </td>
+
+          <td>
+            <div class="text-sm text-base-content/80">
+              {{ audio.updated_date | date:'dd/MM/yyyy HH:mm:ss' }}
+            </div>
+          </td>
+
+          <td class="text-right relative">
+            <div class="dropdown dropdown-left dropdown-end">
+              <div tabindex="0" role="button"
+                class="btn btn-ghost btn-sm btn-square">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                  viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </div>
+
+              <ul tabindex="0"
+                class="dropdown-content z-1 menu p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300">
+                <li>
+                  <a class="flex items-center gap-2"
+                    (click)="updateAudio(audio)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                      viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <path d="M12 20h9" />
+                      <path
+                        d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    <span>Editar</span>
+                  </a>
+                </li>
+
+                <li>
+                  <a
+                    class="flex items-center gap-2 text-error hover:bg-error/10"
+                    (click)="deleteAudio(audio)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                      viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4h8v2" />
+                      <path d="M10 11v6" />
+                      <path d="M14 11v6" />
+                      <path d="M6 6l1 16h10l1-16" />
+                    </svg>
+                    <span>Eliminar</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="5">
+            <div
+              class="grid w-full max-w-6xl gap-8 rounded-[2rem] border border-base-300 bg-gradient-to-br from-base-100 to-primary/5 p-8 shadow-sm lg:grid-cols-2 lg:p-10">
+              <div class="flex items-center justify-center">
+                <div class="relative w-full max-w-md">
+                  <div
+                    class="absolute inset-0 rounded-3xl bg-primary/10 blur-3xl"></div>
+
+                  <div
+                    class="relative rounded-3xl border border-base-300 bg-base-100 p-6 shadow-xl">
+                    <div class="mb-4 flex items-center gap-2">
+                      <div class="h-3 w-3 rounded-full bg-error"></div>
+                      <div class="h-3 w-3 rounded-full bg-warning"></div>
+                      <div class="h-3 w-3 rounded-full bg-success"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                      <div class="h-4 w-2/3 rounded-full bg-base-300"></div>
+                      <div class="grid grid-cols-3 gap-3">
+                        <div class="h-24 rounded-2xl bg-info/15"></div>
+                        <div class="h-24 rounded-2xl bg-primary/15"></div>
+                        <div class="h-24 rounded-2xl bg-success/15"></div>
+                      </div>
+                      <div class="h-24 rounded-2xl bg-base-200"></div>
+                    </div>
+
+                    <div
+                      class="absolute -right-5 -top-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-content shadow-lg">
+                      <i class="pi pi-megaphone text-2xl"></i>
+                    </div>
+
+                    <div
+                      class="absolute -bottom-5 -left-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-info text-info-content shadow-md">
+                      <i class="pi pi-chart-bar text-xl"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center">
+                <div class="max-w-xl">
+                  <h3
+                    class="text-3xl font-extrabold leading-tight text-base-content lg:text-5xl">
+                    Aún no tienes audios subidos
+                  </h3>
+
+                  <p class="mt-4 text-lg leading-8 text-base-content/70">
+                    Sube tus primeros audios a una campaña para empezar a
+                    transcripbir, analizar,
+                    organizar conversaciones y obtener insights accionables.
+                  </p>
+
+                  <div class="mt-8">
+                    <button
+                      class="btn btn-primary btn-lg px-8 shadow-lg shadow-primary/20"
+                      (click)="addAudio()">
+                      Subir primeros audios
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div
+    class="px-4 py-3 border-t border-base-200 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div></div>
+
+    <div class="join">
+      <button class="btn btn-sm join-item" type="button" (click)="prevPage()"
+        [disabled]="(meta()?.page ?? 1) <= 1">
+        ‹
+      </button>
+
+      <button class="btn btn-sm join-item btn-ghost pointer-events-none"
+        type="button">
+        Página {{ meta()?.page ?? 1 }} / {{ meta()?.pages ?? 1 }}
+      </button>
+
+      <button class="btn btn-sm join-item" type="button" (click)="nextPage()"
+        [disabled]="(meta()?.page ?? 1) >= (meta()?.pages ?? 1)">
+        ›
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<app-add-audios></app-add-audios>
+<app-delete-audio></app-delete-audio>
+<app-update-audio></app-update-audio>
+<!-- <app-add-campaign></app-add-campaign>
+<app-delete-campaign></app-delete-campaign>
+<app-update-campaign></app-update-campaign> -->

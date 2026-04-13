@@ -1,0 +1,50 @@
+<article class="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm">
+  <h2 class="text-lg font-bold text-base-content">Crear Prompt</h2>
+  <div class="mt-4 space-y-3">
+    <input
+      class="input input-bordered w-full bg-base-100 analysis-neon-control"
+      placeholder="Nombre"
+      [ngModel]="newPromptName"
+      (ngModelChange)="newPromptNameChange.emit($event)" />
+    <textarea
+      class="textarea textarea-bordered w-full h-32 bg-base-100 analysis-neon-control"
+      placeholder="Texto del prompt"
+      [ngModel]="newPromptText"
+      (ngModelChange)="newPromptTextChange.emit($event)"></textarea>
+    <button
+      class="btn btn-primary w-full"
+      [disabled]="working"
+      (click)="createPrompt.emit()">Guardar Prompt</button>
+    @if (promptMessage) {
+    <div
+      class="alert mt-3 py-3 text-sm shadow-sm"
+      [class.alert-error]="promptMessageType === 'error'"
+      [class.alert-success]="promptMessageType === 'success'">
+      {{ promptMessage }}
+    </div>
+    }
+  </div>
+
+  <h3 class="mt-5 text-sm font-bold text-base-content">Prompts
+    Registrados</h3>
+  <div class="mt-2 max-h-48 space-y-2 overflow-y-auto pr-1">
+    @for (prompt of prompts; track prompt.id) {
+    <div class="rounded-lg border border-base-200 bg-base-200/40 p-3">
+      <div class="flex items-start justify-between gap-2">
+        <strong class="text-sm text-base-content">{{ prompt.name
+          }}</strong>
+        <button class="btn btn-xs"
+          [class.btn-error]="!isProtectedPrompt(prompt.name)"
+          [class.btn-disabled]="isProtectedPrompt(prompt.name)"
+          [disabled]="isProtectedPrompt(prompt.name)"
+          (click)="deletePrompt.emit(prompt.id)">
+          {{ isProtectedPrompt(prompt.name) ? 'Protegido' : 'Eliminar'
+          }}
+        </button>
+      </div>
+      <p class="mt-1 text-xs text-base-content/70 line-clamp-2">{{
+        prompt.prompt_text }}</p>
+    </div>
+    }
+  </div>
+</article>
