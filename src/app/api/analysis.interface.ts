@@ -13,6 +13,12 @@ export interface PromptTemplateCreate {
   prompt_text: string;
 }
 
+export interface PromptTemplateUpdate {
+  name?: string;
+  prompt_text?: string;
+  is_active?: boolean;
+}
+
 export interface OutputFormatItem {
   id: string;
   user_id: string;

@@ -12,6 +12,7 @@ import {
   MetadataExtractionTypeItem,
   PromptTemplateCreate,
   PromptTemplateItem,
+  PromptTemplateUpdate,
 } from '@api/analysis.interface';
 import { ApiConfigService } from '@core/config/api-config.service';
 import { Observable } from 'rxjs';
@@ -27,6 +28,13 @@ export class AnalysisService {
 
   public createPrompt(dto: PromptTemplateCreate): Observable<PromptTemplateItem> {
     return this._http.post<PromptTemplateItem>(this._api.main('/analysis-configs/prompts'), dto);
+  }
+
+  public updatePrompt(promptId: string, dto: PromptTemplateUpdate): Observable<PromptTemplateItem> {
+    return this._http.put<PromptTemplateItem>(
+      this._api.main(`/analysis-configs/prompts/${promptId}`),
+      dto,
+    );
   }
 
   public deletePrompt(promptId: string): Observable<{ message: string; detail?: string | null }> {

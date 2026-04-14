@@ -16,14 +16,20 @@ export class PromptManager {
   @Input({ required: true }) working = false;
   @Input() promptMessage = '';
   @Input() promptMessageType: 'error' | 'success' | '' = '';
+  @Input() editingPromptId = '';
 
   @Output() newPromptNameChange = new EventEmitter<string>();
   @Output() newPromptTextChange = new EventEmitter<string>();
   @Output() createPrompt = new EventEmitter<void>();
+  @Output() editPrompt = new EventEmitter<string>();
   @Output() deletePrompt = new EventEmitter<string>();
 
   public isProtectedPrompt(name: string): boolean {
     const low = (name || '').trim().toLowerCase();
     return this._protectedKeywords.some((keyword) => low.includes(keyword));
+  }
+
+  public isEditingPrompt(promptId: string): boolean {
+    return this.editingPromptId === promptId;
   }
 }

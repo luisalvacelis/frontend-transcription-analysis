@@ -21,13 +21,7 @@ import { ResultsAnalysisTable } from '@feactures/analysis/components/results-ana
 
 @Component({
   selector: 'app-analysis-home',
-  imports: [
-    FormsModule,
-    HeaderAnalysis,
-    ProcessAnalysis,
-    FormatManager,
-    ResultsAnalysisTable,
-  ],
+  imports: [FormsModule, HeaderAnalysis, ProcessAnalysis, FormatManager, ResultsAnalysisTable],
   templateUrl: './analysis-home.html',
   styleUrl: './analysis-home.css',
 })

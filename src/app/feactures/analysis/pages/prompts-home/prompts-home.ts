@@ -17,6 +17,7 @@ export class PromptsHome {
   public readonly prompts = signal<PromptTemplateItem[]>([]);
   public readonly newPromptName = signal<string>('');
   public readonly newPromptText = signal<string>('');
+  public readonly editingPromptId = signal<string>('');
   public readonly promptMessage = signal<string>('');
   public readonly promptMessageType = signal<'error' | 'success' | ''>('');
   public readonly working = signal<boolean>(false);
@@ -39,6 +40,7 @@ export class PromptsHome {
     this.clearMessages();
     const name = this.newPromptName().trim();
     const promptText = this.newPromptText().trim();
+    const editingPromptId = this.editingPromptId();
 
     if (!name || promptText.length < 10) {
       this.promptMessage.set('Nombre y prompt son obligatorios (minimo 10 caracteres en prompt).');
@@ -47,24 +49,53 @@ export class PromptsHome {
     }
 
     this.working.set(true);
-    this._analysisService
-      .createPrompt({ name, prompt_text: promptText })
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe({
-        next: () => {
-          this.promptMessage.set('Prompt registrado correctamente');
-          this.promptMessageType.set('success');
-          this.newPromptName.set('');
-          this.newPromptText.set('');
-          this.working.set(false);
-          this.refreshPrompts();
-        },
-        error: (err) => {
-          this.promptMessage.set(err?.error?.detail || 'No se pudo registrar prompt');
-          this.promptMessageType.set('error');
-          this.working.set(false);
-        },
-      });
+
+    const request$ = editingPromptId
+      ? this._analysisService.updatePrompt(editingPromptId, { name, prompt_text: promptText })
+      : this._analysisService.createPrompt({ name, prompt_text: promptText });
+
+    request$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe({
+      next: () => {
+        this.promptMessage.set(
+          editingPromptId ? 'Prompt actualizado correctamente' : 'Prompt registrado correctamente',
+        );
+        this.promptMessageType.set('success');
+        this.newPromptName.set('');
+        this.newPromptText.set('');
+        this.editingPromptId.set('');
+        this.working.set(false);
+        this.refreshPrompts();
+      },
+      error: (err) => {
+        this.promptMessage.set(
+          err?.error?.detail ||
+            (editingPromptId ? 'No se pudo actualizar prompt' : 'No se pudo registrar prompt'),
+        );
+        this.promptMessageType.set('error');
+        this.working.set(false);
+      },
+    });
+  }
+
+  public startEditPrompt(promptId: string): void {
+    const prompt = this.prompts().find((item) => item.id === promptId);
+    if (!prompt) {
+      this.promptMessage.set('No se encontró el prompt a editar');
+      this.promptMessageType.set('error');
+      return;
+    }
+
+    this.clearMessages();
+    this.editingPromptId.set(prompt.id);
+    this.newPromptName.set(prompt.name);
+    this.newPromptText.set(prompt.prompt_text);
+  }
+
+  public cancelEditPrompt(): void {
+    this.editingPromptId.set('');
+    this.newPromptName.set('');
+    this.newPromptText.set('');
+    this.clearMessages();
   }
 
   public deletePrompt(promptId: string): void {

@@ -14,7 +14,8 @@
     <button
       class="btn btn-primary w-full"
       [disabled]="working"
-      (click)="createPrompt.emit()">Guardar Prompt</button>
+      (click)="createPrompt.emit()">{{ editingPromptId ? 'Actualizar Prompt' :
+      'Guardar Prompt' }}</button>
     @if (promptMessage) {
     <div
       class="alert mt-3 py-3 text-sm shadow-sm"
@@ -33,14 +34,21 @@
       <div class="flex items-start justify-between gap-2">
         <strong class="text-sm text-base-content">{{ prompt.name
           }}</strong>
-        <button class="btn btn-xs"
-          [class.btn-error]="!isProtectedPrompt(prompt.name)"
-          [class.btn-disabled]="isProtectedPrompt(prompt.name)"
-          [disabled]="isProtectedPrompt(prompt.name)"
-          (click)="deletePrompt.emit(prompt.id)">
-          {{ isProtectedPrompt(prompt.name) ? 'Protegido' : 'Eliminar'
-          }}
-        </button>
+        <div class="flex gap-2">
+          <button class="btn btn-xs btn-outline"
+            [disabled]="isProtectedPrompt(prompt.name)"
+            (click)="editPrompt.emit(prompt.id)">
+            Editar
+          </button>
+          <button class="btn btn-xs"
+            [class.btn-error]="!isProtectedPrompt(prompt.name)"
+            [class.btn-disabled]="isProtectedPrompt(prompt.name)"
+            [disabled]="isProtectedPrompt(prompt.name)"
+            (click)="deletePrompt.emit(prompt.id)">
+            {{ isProtectedPrompt(prompt.name) ? 'Protegido' : 'Eliminar'
+            }}
+          </button>
+        </div>
       </div>
       <p class="mt-1 text-xs text-base-content/70 line-clamp-2">{{
         prompt.prompt_text }}</p>
