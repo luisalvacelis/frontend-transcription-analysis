@@ -348,6 +348,7 @@ export class AnalysisHome {
         analysis_provider: 'openai',
         prompt_template_id: promptId || undefined,
         output_format_id: formatId || undefined,
+        metadata_extraction_type: this.selectedMetadataExtractionType() || undefined,
       })
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe({

@@ -15,15 +15,6 @@ import { UpdateAudios } from '../update-audios/update-audios';
   selector: 'app-table-audios',
   imports: [DatePipe, AddAudios, DeleteAudios, UpdateAudios],
   templateUrl: './table-audios.html',
-  styles: [
-    `
-      .campaign-select,
-      .campaign-select option {
-        background-color: hsl(var(--b1));
-        color: hsl(var(--bc));
-      }
-    `,
-  ],
 })
 export class TableAudios {
   private readonly _addAudiosModal = viewChild.required(AddAudios);

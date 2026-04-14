@@ -2,7 +2,7 @@
   class="rounded-2xl border border-base-200 bg-base-100 p-5 pb-10 shadow-sm lg:col-span-2">
   <h2 class="text-lg font-bold text-base-content">Ejecucion por Campaña</h2>
 
-  <div class="mt-4 grid gap-4 md:grid-cols-5">
+  <div class="mt-4 grid gap-4 md:grid-cols-6">
     <label class="form-control">
       <span class="label-text text-base-content/70">Campaña</span>
       <select
@@ -25,6 +25,18 @@
     <label class="form-control">
       <span class="label-text text-base-content/70">Formato salida</span>
       <ng-content select="[format-select]"></ng-content>
+    </label>
+
+    <label class="form-control">
+      <span class="label-text text-base-content/70">Tipo metadatos</span>
+      <select
+        class="select select-bordered w-full bg-base-100 analysis-neon-control"
+        [ngModel]="selectedMetadataExtractionType"
+        (ngModelChange)="selectedMetadataExtractionTypeChange.emit($event)">
+        @for (item of metadataExtractionTypes; track item.id) {
+        <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
     </label>
 
     <label class="form-control">

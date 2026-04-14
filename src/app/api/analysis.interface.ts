@@ -51,6 +51,7 @@ export interface PipelineStartRequest {
   analysis_provider: 'openai';
   prompt_template_id?: string;
   output_format_id?: string;
+  metadata_extraction_type?: string;
 }
 
 export interface PromptFormatSuggestionItem {
