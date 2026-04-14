@@ -51,20 +51,7 @@
       </select>
     </app-process-analysis>
 
-    <div class="mt-10 grid items-start gap-x-16 gap-y-12 lg:grid-cols-2">
-      <app-prompt-manager
-        [prompts]="prompts()"
-        [newPromptName]="newPromptName()"
-        [newPromptText]="newPromptText()"
-        [working]="working()"
-        [promptMessage]="promptMessage()"
-        [promptMessageType]="promptMessageType()"
-        (newPromptNameChange)="newPromptName.set($event)"
-        (newPromptTextChange)="newPromptText.set($event)"
-        (createPrompt)="createPrompt()"
-        (deletePrompt)="deletePrompt($event)">
-      </app-prompt-manager>
-
+    <div class="mt-10">
       <app-format-manager
         [formats]="formats()"
         [newFormatName]="newFormatName()"

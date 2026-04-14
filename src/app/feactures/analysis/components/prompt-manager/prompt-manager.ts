@@ -8,6 +8,8 @@ import { PromptTemplateItem } from '@api/analysis.interface';
   templateUrl: './prompt-manager.html',
 })
 export class PromptManager {
+  private readonly _protectedKeywords = ['vector store', 'vector_store', 'scotiabank'];
+
   @Input({ required: true }) prompts: PromptTemplateItem[] = [];
   @Input({ required: true }) newPromptName = '';
   @Input({ required: true }) newPromptText = '';
@@ -20,7 +22,8 @@ export class PromptManager {
   @Output() createPrompt = new EventEmitter<void>();
   @Output() deletePrompt = new EventEmitter<string>();
 
-  public isProtectedPrompt(_name: string): boolean {
-    return false;
+  public isProtectedPrompt(name: string): boolean {
+    const low = (name || '').trim().toLowerCase();
+    return this._protectedKeywords.some((keyword) => low.includes(keyword));
   }
 }

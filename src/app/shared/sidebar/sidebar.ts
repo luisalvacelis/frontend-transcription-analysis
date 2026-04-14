@@ -6,7 +6,7 @@ import { AuthService } from '@feactures/auth/services/auth.service';
 type MenuItem = {
   label: string;
   route: string;
-  icon: 'dashboard' | 'campaigns' | 'audios' | 'audios_analysis';
+  icon: 'dashboard' | 'campaigns' | 'audios' | 'audios_analysis' | 'prompts';
 };
 
 type MenuGroup = {
@@ -52,6 +52,11 @@ export class Sidebar {
           label: 'Centro Analisis',
           route: '/audios_analysis',
           icon: 'audios_analysis',
+        },
+        {
+          label: 'Prompts',
+          route: '/audios_analysis/prompts',
+          icon: 'prompts',
         },
       ],
     },

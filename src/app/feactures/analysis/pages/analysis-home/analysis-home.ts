@@ -16,7 +16,6 @@ import { CampaignsService } from '@feactures/campaigns/services/campaigns.servic
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HeaderAnalysis } from '@feactures/analysis/components/header-analysis/header-analysis';
 import { ProcessAnalysis } from '@feactures/analysis/components/process-analysis/process-analysis';
-import { PromptManager } from '@feactures/analysis/components/prompt-manager/prompt-manager';
 import { FormatManager } from '@feactures/analysis/components/format-manager/format-manager';
 import { ResultsAnalysisTable } from '@feactures/analysis/components/results-analysis-table/results-analysis-table';
 
@@ -26,7 +25,6 @@ import { ResultsAnalysisTable } from '@feactures/analysis/components/results-ana
     FormsModule,
     HeaderAnalysis,
     ProcessAnalysis,
-    PromptManager,
     FormatManager,
     ResultsAnalysisTable,
   ],
