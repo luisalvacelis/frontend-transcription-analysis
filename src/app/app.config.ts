@@ -8,7 +8,7 @@ import { authInterceptor } from '@feactures/auth/interceptors/auth.interceptors'
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withHashLocation()),
+    // provideRouter(routes, withHashLocation()),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideRouter(routes),
   ],

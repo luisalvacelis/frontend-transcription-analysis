@@ -61,8 +61,9 @@ export class CampaignsService {
       .pipe(tap((data) => this._cache.set(cacheKey, data)));
   }
 
-  public loadTop100WithStats(): Observable<Page<CampaignWithStatsItem>> {
-    const cacheKey = CacheService.getPaginateKey('campaigns_with_stats', 1, 100, '');
+  public loadWithStats(dto: CampaignsLoad): Observable<Page<CampaignWithStatsItem>> {
+    const { page, page_size, search } = dto;
+    const cacheKey = CacheService.getPaginateKey('campaigns_with_stats', page, page_size, search);
     const cached = this._cache.get<Page<CampaignWithStatsItem>>(cacheKey);
     if (cached) {
       return new Observable((obs) => {
@@ -71,10 +72,17 @@ export class CampaignsService {
       });
     }
 
-    const url = this._api.main('/campaigns/with-stats?page=1&page_size=100');
+    let url = this._api.main(`/campaigns/with-stats?page=${page}&page_size=${page_size}`);
+    if (search && search.trim()) {
+      url += `&search=${encodeURIComponent(search.trim())}`;
+    }
     return this._http
       .get<Page<CampaignWithStatsItem>>(url)
       .pipe(tap((data) => this._cache.set(cacheKey, data)));
+  }
+
+  public loadTop100WithStats(): Observable<Page<CampaignWithStatsItem>> {
+    return this.loadWithStats({ page: 1, page_size: 100 });
   }
 
   public loadCampaignStats(campaign_id: string): Observable<CampaignsStats> {
@@ -99,6 +107,10 @@ export class CampaignsService {
   public update(campaign_id: string, dto: CampaignsUpdate): Observable<CampaignsItem> {
     const url = this._api.main(`/campaigns/${campaign_id}`);
     return this._http.put<CampaignsItem>(url, dto).pipe(tap(() => this.invalidateCampaignsCache()));
+  }
+
+  public invalidateCache(): void {
+    this._cache.invalidate(/^campaigns_/);
   }
 
   private invalidateCampaignsCache(): void {

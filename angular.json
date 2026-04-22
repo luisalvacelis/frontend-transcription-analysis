@@ -44,7 +44,39 @@
               ],
               "outputHashing": "all"
             },
+            "prod": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "development": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -58,8 +90,14 @@
             "production": {
               "buildTarget": "frontend-transcription-analysis:build:production"
             },
+            "prod": {
+              "buildTarget": "frontend-transcription-analysis:build:prod"
+            },
             "development": {
               "buildTarget": "frontend-transcription-analysis:build:development"
+            },
+            "dev": {
+              "buildTarget": "frontend-transcription-analysis:build:dev"
             }
           },
           "defaultConfiguration": "development"

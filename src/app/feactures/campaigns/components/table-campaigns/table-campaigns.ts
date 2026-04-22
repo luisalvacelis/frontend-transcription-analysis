@@ -1,7 +1,7 @@
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Component, DestroyRef, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CampaignsItem } from '@api/campaigns.interface';
+import { CampaignsItem, CampaignWithStatsItem } from '@api/campaigns.interface';
 import { PageMeta } from '@api/page.interface';
 import { CampaignsService } from '@feactures/campaigns/services/campaigns.service';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
@@ -11,7 +11,7 @@ import { UpdateCampaign } from '@feactures/campaigns/components/update-campaign/
 
 @Component({
   selector: 'app-table-campaigns',
-  imports: [DatePipe, AddCampaign, DeleteCampaign, UpdateCampaign],
+  imports: [CurrencyPipe, AddCampaign, DeleteCampaign, UpdateCampaign],
   templateUrl: './table-campaigns.html',
 })
 export class TableCampaigns {
@@ -27,7 +27,7 @@ export class TableCampaigns {
   public readonly pageSize = signal<number>(10);
   public readonly searchTerm = signal<string>('');
   public readonly refreshCounter = signal<number>(0);
-  public readonly campaigns = signal<CampaignsItem[]>([]);
+  public readonly campaigns = signal<CampaignWithStatsItem[]>([]);
   public readonly meta = signal<PageMeta | null>(null);
   public readonly loading = signal<boolean>(false);
   public readonly error = signal<string | null>(null);
@@ -43,7 +43,7 @@ export class TableCampaigns {
       this.error.set(null);
 
       const sub = this._campaignsService
-        .load({ page, page_size, search })
+        .loadWithStats({ page, page_size, search })
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
           next: (data) => {
@@ -81,6 +81,7 @@ export class TableCampaigns {
   }
 
   public refreshTable(): void {
+    this._campaignsService.invalidateCache();
     this.refreshCounter.set(this.refreshCounter() + 1);
   }
 
@@ -103,11 +104,11 @@ export class TableCampaigns {
     this._addCampaignModal().open();
   }
 
-  public updateCampaign(dto: CampaignsItem): void {
-    this._updateCampaignModal().open(dto);
+  public updateCampaign(dto: CampaignWithStatsItem): void {
+    this._updateCampaignModal().open(dto as unknown as CampaignsItem);
   }
 
-  public deleteCampaign(dto: CampaignsItem): void {
-    this._deleteCampaignModal().open(dto);
+  public deleteCampaign(dto: CampaignWithStatsItem): void {
+    this._deleteCampaignModal().open(dto as unknown as CampaignsItem);
   }
 }

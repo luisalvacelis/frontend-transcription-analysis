@@ -1,4 +1,3 @@
-
 export const environment = {
-  url_api_main: 'https://backend-transcription-analysis.onrender.com',
+  url_api_main: 'http://localhost:8000',
 };

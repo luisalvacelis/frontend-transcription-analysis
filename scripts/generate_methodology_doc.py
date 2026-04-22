@@ -498,8 +498,8 @@ reqs_func = [
     ("RF-042", "Pipeline", "Pipeline asíncrono", "El pipeline debe ejecutarse en background con monitoreo de progreso.", "Alta", "Implementado"),
     # Export
     ("RF-043", "Exportación", "Exportar XLSX", "El sistema debe exportar resultados de análisis en formato Excel.", "Alta", "Implementado"),
-    ("RF-044", "Exportación", "Exportar CSV", "El sistema debe exportar resultados de análisis en formato CSV.", "Media", "Implementado"),
-    ("RF-045", "Exportación", "Exportar JSON", "El sistema debe exportar resultados de análisis en formato JSON.", "Media", "Implementado"),
+    ("RF-044", "Exportación", "Exportar CSV", "El sistema debe exportar resultados de análisis en formato CSV.", "Media", "Pendiente"),
+    ("RF-045", "Exportación", "Exportar JSON", "El sistema debe exportar resultados de análisis en formato JSON.", "Media", "Pendiente"),
     ("RF-046", "Exportación", "Incluir transcripción", "La exportación debe permitir incluir o excluir la transcripción.", "Media", "Implementado"),
     ("RF-047", "Exportación", "Metadatos de audio", "La exportación debe extraer metadatos del nombre de archivo (DNI, ejecutivo, fecha).", "Media", "Implementado"),
     # Dashboard & UI
@@ -606,7 +606,7 @@ doc.add_paragraph("Gestión del ciclo de vida de campañas de llamadas, incluyen
 p = doc.add_paragraph()
 p.add_run("Backend:").bold = True
 camp_be = [
-    ("campaigns_router.py", "20+ endpoints: CRUD, stats, transcription, analysis, pipeline, export."),
+    ("campaigns_router.py", "18 endpoints: CRUD, stats, transcription, analysis, pipeline, export."),
     ("audio_service.py", "CampaignRepository: CRUD. AudioRepository: consultas filtradas."),
     ("deepgram_service.py", "Transcripción cloud con failover de API keys."),
     ("whisperx_service.py", "Transcripción local con diarización y alineación."),
@@ -635,7 +635,7 @@ doc.add_paragraph("Gestión de archivos de audio: carga, almacenamiento, listado
 p = doc.add_paragraph()
 p.add_run("Backend:").bold = True
 aud_be = [
-    ("audios_router.py", "8 endpoints: CRUD, upload (single/multi), transcribe, stats."),
+    ("audios_router.py", "9 endpoints: CRUD, upload (single/multi), transcribe, stats, delete all by campaign."),
     ("audio_service.py", "AudioRepository: CRUD, consultas con filtros y paginación."),
     ("storage_service.py", "Validación de archivos, almacenamiento en disco, detección de duración."),
     ("ffmpeg_utils.py", "Conversión de formatos de audio. Extracción de duración con ffprobe."),
@@ -743,14 +743,14 @@ camp_eps = [
     ("POST", "/campaigns/{id}/transcribe-all", "Transcripción masiva", "provider (deepgram/whisperx)", "Status message"),
     ("POST", "/campaigns/{id}/transcribe-stop", "Detener transcripción", "-", "Status message"),
     ("GET", "/campaigns/{id}/transcribe-status", "Progreso transcripción", "-", "AsyncStatus"),
-    ("POST", "/campaigns/{id}/analyze-all-async", "Análisis masivo async", "AnalysisRequest", "Queue response"),
+    ("POST", "/campaigns/{id}/analyze-all", "Análisis masivo sync", "CampaignAnalysisRequest", "Results"),
+    ("POST", "/campaigns/{id}/analyze-all-async", "Análisis masivo async", "AsyncAnalysisRequest", "Queue response"),
+    ("POST", "/campaigns/{id}/pipeline-async", "Pipeline completo", "PipelineRequest", "Queue response"),
     ("POST", "/campaigns/{id}/analyze-stop", "Detener análisis", "-", "Status message"),
     ("GET", "/campaigns/{id}/analyze-status", "Progreso análisis", "-", "AsyncStatus"),
     ("GET", "/campaigns/{id}/analysis-results", "Resultados análisis", "-", "Results array"),
-    ("POST", "/campaigns/{id}/pipeline-async", "Pipeline completo", "PipelineRequest", "Queue response"),
-    ("GET", "/campaigns/{id}/export-wide", "Exportar XLSX", "Query: include_transcription", "File stream"),
-    ("GET", "/campaigns/{id}/export-wide-csv", "Exportar CSV", "Query: include_transcription", "File stream"),
-    ("GET", "/campaigns/{id}/export-results-json", "Exportar JSON", "-", "JSON array"),
+    ("GET", "/campaigns/{id}/transcriptions", "Transcripciones", "-", "Transcriptions array"),
+    ("GET", "/campaigns/{id}/analysis-export", "Exportar XLSX", "-", "File stream (.xlsx)"),
 ]
 create_table(doc, ["Método", "Ruta", "Descripción", "Request", "Response"], camp_eps, col_widths=[1.3, 4.5, 2.5, 4, 4])
 
@@ -765,6 +765,7 @@ aud_eps = [
     ("PUT", "/audios/{id}", "Actualizar audio", "AudioUpdateRequest", "AudioResponse"),
     ("DELETE", "/audios/{id}", "Eliminar audio", "-", "MessageResponse (204)"),
     ("POST", "/audios/{id}/transcribe", "Transcribir audio", "provider", "Status message"),
+    ("DELETE", "/audios/campaign/{id}/all", "Eliminar todos de campaña", "-", "MessageResponse"),
 ]
 create_table(doc, ["Método", "Ruta", "Descripción", "Request", "Response"], aud_eps, col_widths=[1.3, 4, 2.5, 5, 3.5])
 
@@ -1141,9 +1142,9 @@ doc.add_paragraph(
 )
 
 export_formats = [
-    ("XLSX (Excel)", "GET /campaigns/{id}/export-wide", "Formato ancho: 1 fila por audio, columnas dinámicas según criterios. Incluye metadatos y observaciones agrupadas."),
-    ("CSV", "GET /campaigns/{id}/export-wide-csv", "Misma estructura que XLSX en formato CSV para herramientas ligeras."),
-    ("JSON", "GET /campaigns/{id}/export-results-json", "Array JSON con todos los análisis, metadatos y transcripciones."),
+    ("XLSX (Excel)", "GET /campaigns/{id}/analysis-export", "Formato ancho: 1 fila por audio, columnas dinámicas según criterios. Incluye metadatos y observaciones agrupadas."),
+    ("CSV", "Pendiente", "Pendiente de implementación. Se planea como extensión del endpoint de exportación XLSX."),
+    ("JSON", "Pendiente", "Pendiente de implementación. Se planea como endpoint adicional para consumo programático."),
 ]
 create_table(doc, ["Formato", "Endpoint", "Descripción"], export_formats, col_widths=[2.5, 5, 9])
 

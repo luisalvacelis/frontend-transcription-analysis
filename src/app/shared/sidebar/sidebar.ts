@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@feactures/auth/services/auth.service';
 
 type MenuItem = {
@@ -16,7 +16,7 @@ type MenuGroup = {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, RouterLinkActive, DatePipe],
   templateUrl: './sidebar.html',
 })
 export class Sidebar {
