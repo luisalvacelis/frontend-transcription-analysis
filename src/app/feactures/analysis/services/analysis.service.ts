@@ -50,16 +50,18 @@ export class AnalysisService {
   }
 
   public updatePrompt(promptId: string, dto: PromptTemplateUpdate): Observable<PromptTemplateItem> {
-    return this._http.put<PromptTemplateItem>(
-      this._api.main(`/analysis-configs/prompts/${promptId}`),
-      dto,
-    ).pipe(tap(() => this.invalidatePromptsCache()));
+    return this._http
+      .put<PromptTemplateItem>(this._api.main(`/analysis-configs/prompts/${promptId}`), dto)
+      .pipe(tap(() => this.invalidatePromptsCache()));
   }
 
   public deletePrompt(promptId: string): Observable<{ message: string; detail?: string | null }> {
-    return this._http.delete<{ message: string; detail?: string | null }>(
-      this._api.main(`/analysis-configs/prompts/${promptId}`),
-    ).pipe(tap(() => this.invalidatePromptsCache()));
+    return this._http
+      .delete<{
+        message: string;
+        detail?: string | null;
+      }>(this._api.main(`/analysis-configs/prompts/${promptId}`))
+      .pipe(tap(() => this.invalidatePromptsCache()));
   }
 
   public invalidatePromptsCache(): void {
