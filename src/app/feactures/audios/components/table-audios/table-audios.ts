@@ -46,6 +46,17 @@ export class TableAudios {
         error: () => this.campaigns.set([]),
       });
 
+    this._searchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this._destroyRef))
+      .subscribe((term) => {
+        this.searchTerm.set(term);
+        this.page.set(1);
+      });
+
+    this._audiosService.refresh$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => {
+      this.refreshCounter.set(this.refreshCounter() + 1);
+    });
+
     effect((onCleanup) => {
       const page = this.page();
       const page_size = this.pageSize();
@@ -72,17 +83,6 @@ export class TableAudios {
         });
 
       onCleanup(() => sub.unsubscribe());
-
-      this._searchSubject
-        .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this._destroyRef))
-        .subscribe((term) => {
-          this.searchTerm.set(term);
-          this.page.set(1);
-        });
-
-      this._audiosService.refresh$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => {
-        this.refreshCounter.set(this.refreshCounter() + 1);
-      });
     });
   }
 
@@ -106,6 +106,7 @@ export class TableAudios {
   }
 
   public refreshTable(): void {
+    this._audiosService.invalidateCache();
     this.refreshCounter.set(this.refreshCounter() + 1);
   }
 

@@ -26,7 +26,11 @@ export class PromptsHome {
     this.refreshPrompts();
   }
 
-  public refreshPrompts(): void {
+  public refreshPrompts(force = false): void {
+    if (force) {
+      this._analysisService.invalidatePromptsCache();
+    }
+
     this._analysisService
       .listPrompts()
       .pipe(takeUntilDestroyed(this._destroyRef))
@@ -64,7 +68,7 @@ export class PromptsHome {
         this.newPromptText.set('');
         this.editingPromptId.set('');
         this.working.set(false);
-        this.refreshPrompts();
+        this.refreshPrompts(true);
       },
       error: (err) => {
         this.promptMessage.set(
@@ -107,7 +111,7 @@ export class PromptsHome {
         next: () => {
           this.promptMessage.set('Prompt eliminado');
           this.promptMessageType.set('success');
-          this.refreshPrompts();
+          this.refreshPrompts(true);
         },
         error: (err) => {
           this.promptMessage.set(err?.error?.detail || 'No se pudo eliminar prompt');

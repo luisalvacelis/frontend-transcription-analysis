@@ -14,33 +14,57 @@ import {
   PromptTemplateItem,
   PromptTemplateUpdate,
 } from '@api/analysis.interface';
+import { CacheService } from '@core/cache/cache.service';
 import { ApiConfigService } from '@core/config/api-config.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
   private readonly _http = inject(HttpClient);
   private readonly _api = inject(ApiConfigService);
+  private readonly _cache = inject(CacheService);
+  private readonly _refreshPromptsSubject = new Subject<void>();
+
+  public readonly refreshPrompts$ = this._refreshPromptsSubject.asObservable();
+
+  private static readonly PROMPTS_CACHE_KEY = 'analysis_prompts_list';
 
   public listPrompts(): Observable<PromptTemplateItem[]> {
-    return this._http.get<PromptTemplateItem[]>(this._api.main('/analysis-configs/prompts'));
+    const cached = this._cache.get<PromptTemplateItem[]>(AnalysisService.PROMPTS_CACHE_KEY);
+    if (cached) {
+      return new Observable((obs) => {
+        obs.next(cached);
+        obs.complete();
+      });
+    }
+
+    return this._http
+      .get<PromptTemplateItem[]>(this._api.main('/analysis-configs/prompts'))
+      .pipe(tap((items) => this._cache.set(AnalysisService.PROMPTS_CACHE_KEY, items)));
   }
 
   public createPrompt(dto: PromptTemplateCreate): Observable<PromptTemplateItem> {
-    return this._http.post<PromptTemplateItem>(this._api.main('/analysis-configs/prompts'), dto);
+    return this._http
+      .post<PromptTemplateItem>(this._api.main('/analysis-configs/prompts'), dto)
+      .pipe(tap(() => this.invalidatePromptsCache()));
   }
 
   public updatePrompt(promptId: string, dto: PromptTemplateUpdate): Observable<PromptTemplateItem> {
     return this._http.put<PromptTemplateItem>(
       this._api.main(`/analysis-configs/prompts/${promptId}`),
       dto,
-    );
+    ).pipe(tap(() => this.invalidatePromptsCache()));
   }
 
   public deletePrompt(promptId: string): Observable<{ message: string; detail?: string | null }> {
     return this._http.delete<{ message: string; detail?: string | null }>(
       this._api.main(`/analysis-configs/prompts/${promptId}`),
-    );
+    ).pipe(tap(() => this.invalidatePromptsCache()));
+  }
+
+  public invalidatePromptsCache(): void {
+    this._cache.invalidate(AnalysisService.PROMPTS_CACHE_KEY);
+    this._refreshPromptsSubject.next();
   }
 
   public listFormats(): Observable<OutputFormatItem[]> {

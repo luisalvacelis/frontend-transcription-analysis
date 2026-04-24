@@ -130,4 +130,8 @@ export class Dashboard {
     if (value.length <= 28) return value;
     return `${value.slice(0, 25)}...`;
   }
+
+  public hasText(value: string | null | undefined): boolean {
+    return String(value ?? '').trim().length > 0;
+  }
 }

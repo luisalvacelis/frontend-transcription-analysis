@@ -21,6 +21,7 @@ export class PromptManager {
   @Output() newPromptNameChange = new EventEmitter<string>();
   @Output() newPromptTextChange = new EventEmitter<string>();
   @Output() createPrompt = new EventEmitter<void>();
+  @Output() refreshPrompts = new EventEmitter<void>();
   @Output() editPrompt = new EventEmitter<string>();
   @Output() deletePrompt = new EventEmitter<string>();
 

@@ -26,8 +26,16 @@
     }
   </div>
 
-  <h3 class="mt-5 text-sm font-bold text-base-content">Prompts
-    Registrados</h3>
+  <div class="mt-5 flex items-center justify-between gap-3">
+    <h3 class="text-sm font-bold text-base-content">Prompts Registrados</h3>
+    <button
+      class="btn btn-ghost btn-sm"
+      type="button"
+      [disabled]="working"
+      (click)="refreshPrompts.emit()">
+      Recargar
+    </button>
+  </div>
   <div class="mt-2 max-h-48 space-y-2 overflow-y-auto pr-1">
     @for (prompt of prompts; track prompt.id) {
     <div class="rounded-lg border border-base-200 bg-base-200/40 p-3">

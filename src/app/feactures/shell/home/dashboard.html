@@ -238,7 +238,7 @@
                             <td class="text-xs">{{ formatMinutes(audio.minutes)
                                 }}</td>
                             <td class="text-xs">
-                                @if (audio.transcription.trim()) {
+                                @if (hasText(audio.transcription)) {
                                 <span
                                     class="badge badge-success badge-outline">Si</span>
                                 } @else {

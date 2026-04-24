@@ -9,7 +9,7 @@ export interface AudiosItem {
   id: string;
   campaign_id: string;
   audio_name: string;
-  transcription: string;
+  transcription: string | null;
   cost: number;
   minutes: number;
   register_date: Date;
@@ -30,7 +30,7 @@ export interface AudiosUploadResponse {
   id: string;
   campaign_id: string;
   audio_name: string;
-  transcription: string;
+  transcription: string | null;
   cost: number;
   minutes: number;
   register_date: Date;
@@ -55,7 +55,7 @@ export interface AudiosUpdateResponse {
   id: string;
   campaign_id: string;
   audio_name: string;
-  transcription: string;
+  transcription: string | null;
   cost: number;
   minutes: number;
   register_date: Date;

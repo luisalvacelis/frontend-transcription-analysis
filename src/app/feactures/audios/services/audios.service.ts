@@ -87,6 +87,10 @@ export class AudiosService {
     return this._http.get<AudiosStatsSummary>(this._api.main('/audios/stats/summary'));
   }
 
+  public invalidateCache(): void {
+    this._cache.invalidate(/^audios_/);
+  }
+
   private invalidateAudiosCache(): void {
     this._cache.invalidate(/^audios_/);
     this._refreshSubject.next();
